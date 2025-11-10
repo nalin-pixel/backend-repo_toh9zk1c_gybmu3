@@ -15,12 +15,19 @@ from schemas import User as UserSchema, Store as StoreSchema, Rating as RatingSc
 
 # App and CORS
 app = FastAPI(title="Ratings Platform API")
+
+# Configure CORS correctly: when credentials are allowed, you cannot use '*'.
+# We don't rely on cookies; we pass Authorization header. So keep credentials disabled
+# and allow wildcard or a specific frontend origin if provided via env.
+FRONTEND_URL = os.getenv("FRONTEND_URL")  # e.g., https://<host>:3000
+allow_origins = [FRONTEND_URL] if FRONTEND_URL else ["*"]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=allow_origins,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 # Auth setup
